@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import apiService from './services/api';
+import {NativeStackScreenProps} from '@react-navigation/native-stack'
 import {
   Alert,
   Image,
@@ -14,8 +15,9 @@ import {
   Keyboard,
   KeyboardAvoidingView,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Login() {
+export default function Login({navigation}) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -24,13 +26,19 @@ export default function Login() {
       Alert.alert('All fields are required');
     } else {
       try {
+        
         const response = await apiService.login('/login', {
           username: username,
           password: password,
         });
 
+        
+
         if (response.token) {
-          Alert.alert('Login Successfully');
+          //Alert.alert('Login Successfully');
+          await AsyncStorage.setItem('userToken', response.token);
+          //Alert.alert(response.token);
+          navigation.replace("TopBarNavigater");
         } else {
           Alert.alert('Invalid username and password');
         }
@@ -44,14 +52,21 @@ export default function Login() {
   return (
     <KeyboardAvoidingView style={styles.container} behavior="height" keyboardVerticalOffset={-100} enabled>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        
+      
         <SafeAreaView style={styles.container}>
+
+       
           <View style={styles.logoContainer}>
             <View>
+              
               <Image
                 source={require('../clone/images/facebooklogo.webp')}
                 style={styles.facebookImage}
               />
+
             </View>
+            
             <View style={styles.inputfiled}>
               <TextInput
                 style={styles.input}
@@ -72,13 +87,13 @@ export default function Login() {
               <Text style={styles.forgatelink}>Forgot password?</Text>
             </View>
           </View>
-
+          
           <View style={styles.footer}>
             <View>
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
-                  Linking.openURL('https://reactnative.dev/');
+                  navigation.navigate("Details01")
                 }}
               >
                 <Text style={styles.buttontext}>Create new account</Text>
@@ -91,6 +106,8 @@ export default function Login() {
             </View>
           </View>
         </SafeAreaView>
+
+        
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );

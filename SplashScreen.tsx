@@ -1,17 +1,47 @@
 import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect } from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function SplashScreen({navigation}) {
 
   useEffect(() => {
+
+
+    const checkUserToken = async () => {
+      try {
+        const userToken = await AsyncStorage.getItem('userToken');
+
+        if (userToken) {
+          
+          navigation.replace('TopBarNavigater'); 
+        } else {
+          
+          navigation.replace('Login'); 
+        }
+      } catch (error) {
+        console.error('Error checking user token:', error);
+      }
+    };
    
     const timeout = setTimeout(() => {
-      navigation.push("Login");
+      checkUserToken();
     }, 2000);
 
+
+    
+    
     
     return () => clearTimeout(timeout);
+
+
+
+
+
   },); 
+
+
+
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.logoContainer}>
